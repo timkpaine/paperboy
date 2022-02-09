@@ -12,4 +12,8 @@ from .multipart import MultipartMiddleware  # noqa: F401
 from .none import NoUserMiddleware, NoAuthRequiredMiddleware  # noqa: F401
 
 # SQL
-from .sqla import SQLUserMiddleware, SQLAuthRequiredMiddleware, SQLAlchemySessionMiddleware  # noqa: F401
+from .sqla import (
+    SQLUserMiddleware,
+    SQLAuthRequiredMiddleware,
+    SQLAlchemySessionMiddleware,
+)  # noqa: F401

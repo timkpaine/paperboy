@@ -16,44 +16,44 @@ class BaseEnum(Enum):
 
 
 class Interval(BaseEnum):
-    MINUTELY = 'minutely'
-    FIVE_MINUTES = '5 minutes'
-    TEN_MINUTES = '10 minutes'
-    THIRTY_MINUTES = '30 minutes'
-    HOURLY = 'hourly'
-    TWO_HOURS = '2 hours'
-    THREE_HOURS = '3 hours'
-    SIX_HOURS = '6 hours'
-    TWELVE_HOURS = '12 hours'
-    DAILY = 'daily'
-    WEEKLY = 'weekly'
-    MONTHLY = 'monthly'
+    MINUTELY = "minutely"
+    FIVE_MINUTES = "5 minutes"
+    TEN_MINUTES = "10 minutes"
+    THIRTY_MINUTES = "30 minutes"
+    HOURLY = "hourly"
+    TWO_HOURS = "2 hours"
+    THREE_HOURS = "3 hours"
+    SIX_HOURS = "6 hours"
+    TWELVE_HOURS = "12 hours"
+    DAILY = "daily"
+    WEEKLY = "weekly"
+    MONTHLY = "monthly"
 
 
 class ReportType(BaseEnum):
-    CONVERT = 'convert'
+    CONVERT = "convert"
     # PUBLISH = 'publish'
 
 
 class OutputType(BaseEnum):
-    NOTEBOOK = 'notebook'
-    PDF = 'pdf'
-    HTML = 'html'
-    EMAIL = 'email'
-    SCRIPT = 'script'
+    NOTEBOOK = "notebook"
+    PDF = "pdf"
+    HTML = "html"
+    EMAIL = "email"
+    SCRIPT = "script"
     # POWERPOINT = 'powerpoint'
 
 
 class PrivacyLevel(BaseEnum):
-    PUBLIC = 'public'
-    PRIVATE = 'private'
+    PUBLIC = "public"
+    PRIVATE = "private"
 
 
 class ServiceLevel(BaseEnum):
-    PRODUCTION = 'production'
-    RESEARCH = 'research'
-    DEVELOPMENT = 'development'
-    PERSONAL = 'personal'
+    PRODUCTION = "production"
+    RESEARCH = "research"
+    DEVELOPMENT = "development"
+    PERSONAL = "personal"
 
 
 _INTERVAL_TYPES = Interval.values()
@@ -64,7 +64,7 @@ _SERVICE_LEVELS = ServiceLevel.values()
 
 
 class Base(HasTraits):
-    '''Base HasTraits abstract base class for all paperboy configureables (User, Notebook, Job, and Report)'''
+    """Base HasTraits abstract base class for all paperboy configureables (User, Notebook, Job, and Report)"""
 
     def __init__(self, config, *args, **kwargs):
         super(Base, self).__init__(*args, **kwargs)
@@ -72,7 +72,7 @@ class Base(HasTraits):
 
     @staticmethod
     def from_json(jsn, config):
-        '''create a paperboy config object from a json
+        """create a paperboy config object from a json
 
         Args:
             jsn: python dictionary from json representing the configuration object
@@ -80,11 +80,11 @@ class Base(HasTraits):
 
         Returns:
             subclass of Base populated from jsn
-        '''
+        """
         raise NotImplementedError()
 
     def to_json(self, include_notebook=False):
-        '''convert a paperboy config to a json
+        """convert a paperboy config to a json
 
         Args:
             self: subclass of Base
@@ -93,29 +93,29 @@ class Base(HasTraits):
 
         Returns:
             dict: python dictionary representing the response json
-        '''
+        """
         raise NotImplementedError()
 
     def form(self):
-        '''generate a JSON form template for the subclass of Base
+        """generate a JSON form template for the subclass of Base
 
         Args:
             self: subclass of Base
 
         Returns:
             dict: python dictionary representing the form template as a JSON
-        '''
+        """
         raise NotImplementedError()
 
     def edit(self):
-        '''generate a JSON edit template for the subclass of Base
+        """generate a JSON edit template for the subclass of Base
 
         Args:
             self: subclass of Base
 
         Returns:
             dict: python dictionary representing the edit template as a JSON
-        '''
+        """
         raise NotImplementedError()
 
     def entry(self):

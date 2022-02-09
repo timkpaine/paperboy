@@ -10,9 +10,9 @@ from ...worker import run
 
 
 def interval_to_schedule(cronjob):
-    '''this function will be called roughly every minute
+    """this function will be called roughly every minute
     and should parse the cronjob's timing to see if the
-    job should run in this minute'''
+    job should run in this minute"""
     now = datetime.now()
 
     # parse minutes first
@@ -21,10 +21,12 @@ def interval_to_schedule(cronjob):
     day_of_week = str(cronjob.dow)
     day_of_month = str(cronjob.dom)
 
-    ret = (_parse(now.minute, minute),
-           _parse(now.hour, hour),
-           _parse(now.day, day_of_month),
-           _parse_dow(now.strftime('%a'), day_of_week))
+    ret = (
+        _parse(now.minute, minute),
+        _parse(now.hour, hour),
+        _parse(now.day, day_of_month),
+        _parse_dow(now.strftime("%a"), day_of_week),
+    )
     if all(ret):
         return True
     return False
@@ -32,12 +34,12 @@ def interval_to_schedule(cronjob):
 
 def _parse(now, field):
     # run every time?
-    if str(field) == '*/1' or str(field) == '*':
+    if str(field) == "*/1" or str(field) == "*":
         return True
 
     # else run every interval?
-    if '-59' in field:
-        splits = field.replace('-59', '').replace('-23', '').split('/')
+    if "-59" in field:
+        splits = field.replace("-59", "").replace("-23", "").split("/")
         base, mod = int(splits[0]), int(splits[1])
 
         # check if now % mod == base
@@ -57,7 +59,7 @@ def _parse(now, field):
 
 def _parse_dow(now, field):
     # run every time?
-    if str(field) == '*' or str(field).upper() == now.upper():
+    if str(field) == "*" or str(field).upper() == now.upper():
         return True
     return False
 
@@ -70,18 +72,24 @@ def run_tasks(add_queue, delete_queue):
         for tid, task in tasks.items():
             job, reports, job_dir, interval, cron = tasks[tid]
             if interval_to_schedule(cron):
-                logging.critical('Submitting - %s' % str(job))
+                logging.critical("Submitting - %s" % str(job))
                 futures.append(executor.submit(run, job, reports, job_dir))
 
         for future in as_completed(futures):
-            logging.critical('Future finished')
+            logging.critical("Future finished")
             if future.exception():
                 raise future.exception()
             else:
                 logging.critical(future.result())
 
         now = datetime.now()
-        end = datetime(year=now.year, month=now.month, day=now.day, hour=now.hour, minute=now.minute) + timedelta(minutes=1)
+        end = datetime(
+            year=now.year,
+            month=now.month,
+            day=now.day,
+            hour=now.hour,
+            minute=now.minute,
+        ) + timedelta(minutes=1)
         while datetime.now() < end:
             # add to tasks
             while True:
@@ -113,15 +121,17 @@ class LocalProcessScheduler(object):
 
         # must occur in gunicorn process
         if self.runner is None:
-            self.runner = threading.Thread(target=run_tasks, args=(self.add_queue, self.delete_queue))
+            self.runner = threading.Thread(
+                target=run_tasks, args=(self.add_queue, self.delete_queue)
+            )
             self.runner.daemon = True
             self.runner.start()
 
         c = CronTab(user=getpass.getuser())
-        cjob = CronItem.from_line(interval + ' echo test', cron=c)
+        cjob = CronItem.from_line(interval + " echo test", cron=c)
 
         self.tasks[job.id] = (job, reports, job_dir, interval, cjob)
-        logging.critical('Scheduling job: %s' % str(job.id))
+        logging.critical("Scheduling job: %s" % str(job.id))
         self.add_queue.put((job, reports, job_dir, interval, cjob))
 
     def unschedule(self, job_id):

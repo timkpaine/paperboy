@@ -232,9 +232,9 @@ class CORSMiddleware:
         self.default_enabled = default_enabled
 
     def process_resource(self, req, resp, resource, *args):
-        if not getattr(resource, 'cors_enabled', self.default_enabled):
+        if not getattr(resource, "cors_enabled", self.default_enabled):
             return
-        cors = getattr(resource, 'cors', self.cors)
+        cors = getattr(resource, "cors", self.cors)
         cors.process(req, resp, resource)
 
 
@@ -337,56 +337,59 @@ class CORS(object):
 
     def __init__(self, **cors_config):
         default_cors_config = {
-            'logger': get_default_logger(),
-            'log_level': None,
-            'allow_all_origins': False,
-            'allow_origins_list': [],
-            'allow_origins_regex': None,
-            'allow_all_headers': False,
-            'allow_headers_list': [],
-            'allow_headers_regex': None,
-            'expose_headers_list': [],
-            'allow_all_methods': False,
-            'allow_methods_list': [],
-            'allow_credentials_all_origins': False,
-            'allow_credentials_origins_list': [],
-            'allow_credentials_origins_regex': None,
-            'max_age': None
-
+            "logger": get_default_logger(),
+            "log_level": None,
+            "allow_all_origins": False,
+            "allow_origins_list": [],
+            "allow_origins_regex": None,
+            "allow_all_headers": False,
+            "allow_headers_list": [],
+            "allow_headers_regex": None,
+            "expose_headers_list": [],
+            "allow_all_methods": False,
+            "allow_methods_list": [],
+            "allow_credentials_all_origins": False,
+            "allow_credentials_origins_list": [],
+            "allow_credentials_origins_regex": None,
+            "max_age": None,
         }
         for cors_setting, setting_value in default_cors_config.items():
             cors_config.setdefault(cors_setting, setting_value)
 
-        unknown_settings = list(set(cors_config.keys()) -
-                                set(default_cors_config.keys()))
+        unknown_settings = list(
+            set(cors_config.keys()) - set(default_cors_config.keys())
+        )
         if unknown_settings:
-            raise ValueError(
-                'Unknown CORS settings: {0}'.format(unknown_settings))
+            raise ValueError("Unknown CORS settings: {0}".format(unknown_settings))
 
         self.logger = cors_config["logger"]
         if cors_config["log_level"] is not None:
             level = logging.getLevelName(cors_config["log_level"])
             self.logger.setLevel(level)
 
-        unknown_methods = list(set(
-            cors_config['allow_methods_list']) - set(HTTP_METHODS))
+        unknown_methods = list(
+            set(cors_config["allow_methods_list"]) - set(HTTP_METHODS)
+        )
         if unknown_methods:
             raise ValueError(
-                'Unknown methods specified for '
-                'allow_methods_list: {0}'.format(unknown_methods))
+                "Unknown methods specified for "
+                "allow_methods_list: {0}".format(unknown_methods)
+            )
 
         self._compile_keys(
             cors_config,
             [
-                'allow_origins_regex', 'allow_headers_regex',
-                'allow_credentials_origins_regex'
-            ])
+                "allow_origins_regex",
+                "allow_headers_regex",
+                "allow_credentials_origins_regex",
+            ],
+        )
 
-        cors_config['allow_methods_list'] = [
-            method.upper() for method in cors_config['allow_methods_list']
+        cors_config["allow_methods_list"] = [
+            method.upper() for method in cors_config["allow_methods_list"]
         ]
 
-        for header_list_key in ['allow_headers_list', 'expose_headers_list']:
+        for header_list_key in ["allow_headers_list", "expose_headers_list"]:
             cors_config[header_list_key] = [
                 header.lower() for header in cors_config[header_list_key]
             ]
@@ -395,35 +398,27 @@ class CORS(object):
         # we cannot set Access-Control-Allow-Origin to *
         self.supports_credentials = False
         for credentials_key in [
-            'allow_credentials_all_origins',
-            'allow_credentials_origins_list',
-            'allow_credentials_origins_regex'
+            "allow_credentials_all_origins",
+            "allow_credentials_origins_list",
+            "allow_credentials_origins_regex",
         ]:
             if cors_config[credentials_key]:
                 self.supports_credentials = True
-        self.logger.debug(
-            "supports_credentials: {0}".format(
-                self.supports_credentials
-            )
-        )
+        self.logger.debug("supports_credentials: {0}".format(self.supports_credentials))
 
         # Detect if we need to send 'Vary: Origin' header
         # This needs to be set if any decisions about which headers to send
         # are being made based on the Origin header the client sends
         self.origins_vary = False
-        if cors_config['allow_all_origins']:
+        if cors_config["allow_all_origins"]:
             for vary_origin_config_key in [
-                'allow_credentials_origins_list',
-                'allow_credentials_origins_regex'
+                "allow_credentials_origins_list",
+                "allow_credentials_origins_regex",
             ]:
                 if cors_config[vary_origin_config_key]:
                     self.origins_vary = True
 
-        self.logger.debug(
-            "origins_vary {0}".format(
-                self.origins_vary
-            )
-        )
+        self.logger.debug("origins_vary {0}".format(self.origins_vary))
 
         self._cors_config = cors_config
 
@@ -455,7 +450,7 @@ class CORS(object):
         if self.origins_vary:
             self._set_vary_origin(resp)
 
-        origin = req.get_header('origin')
+        origin = req.get_header("origin")
         # 6.1.1
         # 6.2.1
         if not origin:
@@ -471,7 +466,7 @@ class CORS(object):
             return
 
         # Basic or actual request
-        if req.method != 'OPTIONS':
+        if req.method != "OPTIONS":
             self.logger.debug("Processing basic or actual request")
             # 6.1.3 (Access-Control-Allow-Credentials)
             self._process_credentials(req, resp, origin)
@@ -481,7 +476,7 @@ class CORS(object):
         # Preflight request
         else:
             self.logger.debug("Processing preflight request")
-            request_method = req.get_header('access-control-request-method')
+            request_method = req.get_header("access-control-request-method")
             # 6.2.3
             if not request_method:
                 self.logger.info(
@@ -518,18 +513,18 @@ class CORS(object):
             is allowed, ``False`` if the origin is not allowed and the
             header has not been added.
         """
-        if self._cors_config['allow_all_origins']:
+        if self._cors_config["allow_all_origins"]:
             if self.supports_credentials:
                 self._set_allow_origin(resp, origin)
             else:
-                self._set_allow_origin(resp, '*')
+                self._set_allow_origin(resp, "*")
             return True
 
-        if origin in self._cors_config['allow_origins_list']:
+        if origin in self._cors_config["allow_origins_list"]:
             self._set_allow_origin(resp, origin)
             return True
 
-        regex = self._cors_config['allow_origins_regex']
+        regex = self._cors_config["allow_origins_regex"]
         if regex is not None:
             if regex.match(origin):
                 self._set_allow_origin(resp, origin)
@@ -546,16 +541,16 @@ class CORS(object):
         """
         if not requested_headers:
             return True
-        elif self._cors_config['allow_all_headers']:
+        elif self._cors_config["allow_all_headers"]:
             self._set_allowed_headers(resp, requested_headers)
             return True
 
         approved_headers = []
         for header in requested_headers:
-            if header.lower() in self._cors_config['allow_headers_list']:
+            if header.lower() in self._cors_config["allow_headers_list"]:
                 approved_headers.append(header)
-            elif self._cors_config.get('allow_headers_regex'):
-                if self._cors_config['allow_headers_regex'].match(header):
+            elif self._cors_config.get("allow_headers_regex"):
+                if self._cors_config["allow_headers_regex"].match(header):
                     approved_headers.append(header)
 
         if len(approved_headers) == len(requested_headers):
@@ -572,18 +567,19 @@ class CORS(object):
         if not requested_method:
             return False
 
-        if self._cors_config['allow_all_methods']:
+        if self._cors_config["allow_all_methods"]:
             allowed_methods = self._get_resource_methods(resource)
             self._set_allowed_methods(resp, allowed_methods)
             if requested_method in allowed_methods:
                 return True
-        elif requested_method in self._cors_config['allow_methods_list']:
+        elif requested_method in self._cors_config["allow_methods_list"]:
             resource_methods = self._get_resource_methods(resource)
             # Only list methods as allowed if they exist
             # on the resource AND are in the allowed_methods_list
             allowed_methods = [
-                method for method in resource_methods
-                if method in self._cors_config['allow_methods_list']
+                method
+                for method in resource_methods
+                if method in self._cors_config["allow_methods_list"]
             ]
             self._set_allowed_methods(resp, allowed_methods)
             if requested_method in allowed_methods:
@@ -594,10 +590,7 @@ class CORS(object):
     def _get_resource_methods(self, resource):
         allowed_methods = []
         for method in HTTP_METHODS:
-            if (
-                hasattr(resource, 'on_' + method.lower()) or
-                resource is None
-            ):
+            if hasattr(resource, "on_" + method.lower()) or resource is None:
                 allowed_methods.append(method)
         return allowed_methods
 
@@ -605,15 +598,15 @@ class CORS(object):
         """Adds the Access-Control-Allow-Credentials to the response
         if the cors settings indicates it should be set.
         """
-        if self._cors_config['allow_credentials_all_origins']:
+        if self._cors_config["allow_credentials_all_origins"]:
             self._set_allow_credentials(resp)
             return True
 
-        if origin in self._cors_config['allow_credentials_origins_list']:
+        if origin in self._cors_config["allow_credentials_origins_list"]:
             self._set_allow_credentials(resp)
             return True
 
-        credentials_regex = self._cors_config['allow_credentials_origins_regex']
+        credentials_regex = self._cors_config["allow_credentials_origins_regex"]
         if credentials_regex:
             if credentials_regex.match(origin):
                 self._set_allow_credentials(resp)
@@ -622,40 +615,40 @@ class CORS(object):
         return False
 
     def _process_expose_headers(self, req, resp):
-        for header in self._cors_config['expose_headers_list']:
-            resp.append_header('access-control-expose-headers', header)
+        for header in self._cors_config["expose_headers_list"]:
+            resp.append_header("access-control-expose-headers", header)
 
     def _process_max_age(self, req, resp):
-        if self._cors_config['max_age']:
-            resp.set_header('access-control-max-age', self._cors_config['max_age'])
+        if self._cors_config["max_age"]:
+            resp.set_header("access-control-max-age", self._cors_config["max_age"])
 
     def _get_requested_headers(self, req):
         headers = []
-        raw_header = req.get_header('access-control-request-headers')
+        raw_header = req.get_header("access-control-request-headers")
         if raw_header is None:
             return headers
-        for requested_header in raw_header.split(','):
+        for requested_header in raw_header.split(","):
             requested_header = requested_header.strip()
             if requested_header:
                 headers.append(requested_header)
         return headers
 
     def _get_requested_method(self, req):
-        return req.get_header('access-control-request-method')
+        return req.get_header("access-control-request-method")
 
     def _set_allow_origin(self, resp, allowed_origin):
-        resp.set_header('access-control-allow-origin', allowed_origin)
+        resp.set_header("access-control-allow-origin", allowed_origin)
 
     def _set_allowed_headers(self, resp, allowed_header_list):
         for allowed_header in allowed_header_list:
-            resp.append_header('access-control-allow-headers', allowed_header)
+            resp.append_header("access-control-allow-headers", allowed_header)
 
     def _set_allowed_methods(self, resp, allowed_methods):
         for method in allowed_methods:
-            resp.append_header('access-control-allow-methods', method)
+            resp.append_header("access-control-allow-methods", method)
 
     def _set_allow_credentials(self, resp):
-        resp.set_header('access-control-allow-credentials', 'true')
+        resp.set_header("access-control-allow-credentials", "true")
 
     def _set_vary_origin(self, resp):
-        resp.append_header('vary', 'origin')
+        resp.append_header("vary", "origin")

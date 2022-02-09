@@ -34,8 +34,8 @@ lint: ## run linter
 	python -m flake8 paperboy setup.py
 	yarn lint
 
-fix:  ## run autopep8/tslint fix
-	python -m autopep8 --in-place -r -a -a paperboy/  setup.py
+fix:  ## run black
+	python -m black paperboy/  setup.py
 	./node_modules/.bin/tslint --fix src/ts/**/*.ts
 
 annotate: ## MyPy type annotation check

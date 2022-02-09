@@ -32,7 +32,6 @@ class Parser(cgi.FieldStorage):
 
 
 class MultipartMiddleware(object):
-
     def __init__(self, parser=None):
         self.parser = parser or Parser
 
@@ -44,7 +43,7 @@ class MultipartMiddleware(object):
             return [self.parse_field(subfield) for subfield in field]
 
         # When file name isn't ascii FieldStorage will not consider it.
-        encoded = field.disposition_options.get('filename*')
+        encoded = field.disposition_options.get("filename*")
         if encoded:
             # http://stackoverflow.com/a/93688
             encoding, filename = encoded.split("''")
@@ -55,7 +54,7 @@ class MultipartMiddleware(object):
             # WARNING we assume file encoding will be same as filename
             # but there is no guaranty.
             field.file = BytesIO(field.file.read().encode(encoding))
-        if getattr(field, 'filename', False):
+        if getattr(field, "filename", False):
             return field
         # This is not a file, thus get flat value (not
         # FieldStorage instance).
@@ -63,20 +62,19 @@ class MultipartMiddleware(object):
 
     def process_request(self, req, resp, **kwargs):
 
-        if 'multipart/form-data' not in (req.content_type or ''):
+        if "multipart/form-data" not in (req.content_type or ""):
             return
 
         # This must be done to avoid a bug in cgi.FieldStorage.
-        req.env.setdefault('QUERY_STRING', '')
+        req.env.setdefault("QUERY_STRING", "")
 
         # To avoid all stream consumption problem which occurs in falcon 1.0.0
         # or above.
-        stream = (req.stream.stream if hasattr(req.stream, 'stream') else
-                  req.stream)
+        stream = req.stream.stream if hasattr(req.stream, "stream") else req.stream
         try:
             form = self.parse(stream=stream, environ=req.env)
         except ValueError as e:  # Invalid boundary?
-            raise falcon.HTTPBadRequest('Error parsing file', str(e))
+            raise falcon.HTTPBadRequest("Error parsing file", str(e))
 
         for key in form:
             # TODO: put files in req.files instead when #418 get merged.

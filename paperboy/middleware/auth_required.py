@@ -1,4 +1,4 @@
-'''Copied from https://gitlab.com/skosh/falcon-helpers due to conda-forge issues
+"""Copied from https://gitlab.com/skosh/falcon-helpers due to conda-forge issues
 Copyright (c) 2017 by Nicholas Zaccardi
 
 Some rights reserved.
@@ -31,12 +31,12 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE AND DOCUMENTATION, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGE.
-'''
+"""
 import falcon
 
 
 def _default_failed(req, resp, **kwargs):
-    raise falcon.HTTPFound('/auth/login')
+    raise falcon.HTTPFound("/auth/login")
 
 
 class AuthRequiredMiddleware:
@@ -72,9 +72,12 @@ class AuthRequiredMiddleware:
             fails
     """
 
-    def __init__(self, resource_param='auth_required',
-                 context_key='auth_token_contents',
-                 when_fails=_default_failed):
+    def __init__(
+        self,
+        resource_param="auth_required",
+        context_key="auth_token_contents",
+        when_fails=_default_failed,
+    ):
 
         self.resource_param = resource_param
         self.context_key = context_key

@@ -9,7 +9,7 @@ class JobOperator(BaseOperator):
         self.job = job
 
     def execute(self, context):
-        self.log.critical('job')
+        self.log.critical("job")
 
 
 class JobCleanupOperator(BaseOperator):
@@ -19,7 +19,7 @@ class JobCleanupOperator(BaseOperator):
         self.job = job
 
     def execute(self, context):
-        self.log.critical('job-cleanup')
+        self.log.critical("job-cleanup")
 
 
 class ReportOperator(BaseOperator):
@@ -29,4 +29,4 @@ class ReportOperator(BaseOperator):
         self.report = report
 
     def execute(self, context):
-        self.log.critical('report')
+        self.log.critical("report")

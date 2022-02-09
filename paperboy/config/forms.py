@@ -1,22 +1,60 @@
-from traitlets import List, Int, Unicode, Bool, Instance, HasTraits, validate, TraitError
+from traitlets import (
+    List,
+    Int,
+    Unicode,
+    Bool,
+    Instance,
+    HasTraits,
+    validate,
+    TraitError,
+)
 from .base import Base
 
-_DOM_IMPLEMENTED = ('text', 'select', 'label', 'button', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span', 'json', 'ipynb', 'textfile')
-_FORM_IMPLEMENTED = ('file', 'text', 'select', 'label', 'submit', 'datetime', 'autocomplete', 'checkbox', 'textarea', 'json')
+_DOM_IMPLEMENTED = (
+    "text",
+    "select",
+    "label",
+    "button",
+    "p",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "p",
+    "span",
+    "json",
+    "ipynb",
+    "textfile",
+)
+_FORM_IMPLEMENTED = (
+    "file",
+    "text",
+    "select",
+    "label",
+    "submit",
+    "datetime",
+    "autocomplete",
+    "checkbox",
+    "textarea",
+    "json",
+)
 
 
 class FormEntry(HasTraits):
-    '''Form template entry to be rendered on the client'''
+    """Form template entry to be rendered on the client"""
+
     name = Unicode(allow_none=False)
-    type = Unicode(default_value='text')
+    type = Unicode(default_value="text")
 
-    @validate('type')
+    @validate("type")
     def _validate_type(self, proposal):
-        if proposal['value'] not in _FORM_IMPLEMENTED:
-            raise TraitError('Unrecognized type : {}'.format(proposal['value']))
-        return proposal['value']
+        if proposal["value"] not in _FORM_IMPLEMENTED:
+            raise TraitError("Unrecognized type : {}".format(proposal["value"]))
+        return proposal["value"]
 
-    value = Unicode(default_value='')
+    value = Unicode(default_value="")
     label = Unicode(allow_none=True)
     placeholder = Unicode(allow_none=True)
     options = List(default_value=[])
@@ -26,40 +64,41 @@ class FormEntry(HasTraits):
     hidden = Bool(default_value=False)
 
     def to_json(self):
-        '''Convert form entry to JSON'''
+        """Convert form entry to JSON"""
         ret = {}
-        ret['name'] = self.name
-        ret['type'] = self.type
+        ret["name"] = self.name
+        ret["type"] = self.type
         if self.value:
-            ret['value'] = self.value
+            ret["value"] = self.value
         if self.label:
-            ret['label'] = self.label
+            ret["label"] = self.label
         if self.placeholder:
-            ret['placeholder'] = self.placeholder
+            ret["placeholder"] = self.placeholder
         if self.options:
-            ret['options'] = self.options
+            ret["options"] = self.options
         if self.url:
-            ret['url'] = self.url
+            ret["url"] = self.url
 
-        ret['required'] = self.required
-        ret['readonly'] = self.readonly
-        ret['hidden'] = self.hidden
+        ret["required"] = self.required
+        ret["readonly"] = self.readonly
+        ret["hidden"] = self.hidden
 
         return ret
 
 
 class DOMEntry(HasTraits):
-    '''DOM node template to be rendered on the client'''
+    """DOM node template to be rendered on the client"""
+
     name = Unicode(allow_none=False)
-    type = Unicode(default_value='p')
+    type = Unicode(default_value="p")
 
-    @validate('type')
+    @validate("type")
     def _validate_type(self, proposal):
-        if proposal['value'] not in _DOM_IMPLEMENTED:
-            raise TraitError('Unrecognized type : {}'.format(proposal['value']))
-        return proposal['value']
+        if proposal["value"] not in _DOM_IMPLEMENTED:
+            raise TraitError("Unrecognized type : {}".format(proposal["value"]))
+        return proposal["value"]
 
-    value = Unicode(default_value='')
+    value = Unicode(default_value="")
     label = Unicode(allow_none=True)
     placeholder = Unicode(allow_none=True)
     options = List(default_value=[])
@@ -69,19 +108,19 @@ class DOMEntry(HasTraits):
 
     def to_json(self):
         ret = {}
-        ret['name'] = self.name
-        ret['type'] = self.type
+        ret["name"] = self.name
+        ret["type"] = self.type
         if self.value:
-            ret['value'] = self.value
+            ret["value"] = self.value
         if self.label:
-            ret['label'] = self.label
+            ret["label"] = self.label
         if self.placeholder:
-            ret['placeholder'] = self.placeholder
+            ret["placeholder"] = self.placeholder
         if self.options:
-            ret['options'] = self.options
-        ret['required'] = self.required
-        ret['readonly'] = self.readonly
-        ret['hidden'] = self.hidden
+            ret["options"] = self.options
+        ret["required"] = self.required
+        ret["readonly"] = self.readonly
+        ret["hidden"] = self.hidden
         return ret
 
     @staticmethod
@@ -94,7 +133,8 @@ class DOMEntry(HasTraits):
 
 
 class Response(HasTraits):
-    '''Response modal template for client'''
+    """Response modal template for client"""
+
     entries = List()
 
     def to_json(self):
@@ -105,7 +145,8 @@ class Response(HasTraits):
 
 
 class ListResult(HasTraits):
-    '''List result metadata for pagination'''
+    """List result metadata for pagination"""
+
     page = Int(default_value=1)
     pages = Int(default_value=1)
     count = Int(default_value=1)
@@ -114,9 +155,9 @@ class ListResult(HasTraits):
 
     def to_json(self):
         ret = {}
-        ret['page'] = self.page
-        ret['pages'] = self.pages
-        ret['count'] = self.count
-        ret['total'] = self.total
-        ret['results'] = [r.entry() for r in self.results]
+        ret["page"] = self.page
+        ret["pages"] = self.pages
+        ret["count"] = self.count
+        ret["total"] = self.total
+        ret["results"] = [r.entry() for r in self.results]
         return ret

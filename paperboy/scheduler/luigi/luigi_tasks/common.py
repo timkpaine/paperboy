@@ -30,7 +30,7 @@ class JobTask(BaseTask):
         super(JobTask, self).__init__(*args, **kwargs)
 
     def run(self):
-        self.log.critical('job')
+        self.log.critical("job")
         self._completed = True
 
 
@@ -46,7 +46,7 @@ class JobCleanupTask(BaseTask):
         super(JobCleanupTask, self).__init__(*args, **kwargs)
 
     def run(self):
-        self.log.critical('job-cleanup')
+        self.log.critical("job-cleanup")
         self._completed = True
 
 
@@ -57,5 +57,5 @@ class ReportTask(BaseTask):
         super(ReportTask, self).__init__(*args, **kwargs)
 
     def run(self):
-        self.log.critical('report')
+        self.log.critical("report")
         self._completed = True

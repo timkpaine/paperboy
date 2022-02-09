@@ -1,4 +1,4 @@
-'''Copied from https://gitlab.com/skosh/falcon-helpers due to conda-forge issues
+"""Copied from https://gitlab.com/skosh/falcon-helpers due to conda-forge issues
 Copyright (c) 2017 by Nicholas Zaccardi
 
 Some rights reserved.
@@ -31,8 +31,9 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE AND DOCUMENTATION, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGE.
-'''
+"""
 from sqlalchemy.orm import sessionmaker, scoped_session
+
 _session_maker = sessionmaker()
 _session = scoped_session(_session_maker)
 
@@ -60,16 +61,15 @@ class LoadUserMiddleware:
     @staticmethod
     def _get_id(req):
         try:
-            return req.context.get('auth_token_contents').get('sub')
+            return req.context.get("auth_token_contents").get("sub")
         except AttributeError:
             return None
 
     def fetch_user(self, user_id):
-        return (self.user_cls
-                    .get_by_id(user_id)
-                    .with_session(self.session())
-                    .one_or_none())
+        return (
+            self.user_cls.get_by_id(user_id).with_session(self.session()).one_or_none()
+        )
 
     def process_request(self, req, resp):
         user_id = self.get_id(req)
-        req.context['user'] = self.fetch_user(user_id)
+        req.context["user"] = self.fetch_user(user_id)

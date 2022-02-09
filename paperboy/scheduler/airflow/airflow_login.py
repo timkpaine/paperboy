@@ -31,6 +31,7 @@ the new module will override this one.
 """
 
 import flask_login
+
 # from flask_login import login_required, current_user, logout_user
 from flask import url_for, redirect
 from airflow import settings
@@ -39,10 +40,10 @@ from sqlalchemy.orm import sessionmaker
 from paperboy.storage.sqla.models.user import UserSQL
 
 
-DEFAULT_USERNAME = 'anon'
+DEFAULT_USERNAME = "anon"
 
 login_manager = flask_login.LoginManager()
-login_manager.login_view = 'airflow.login'  # Calls login() below
+login_manager.login_view = "airflow.login"  # Calls login() below
 login_manager.login_message = None
 
 

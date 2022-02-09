@@ -10,14 +10,14 @@ class VoilaTask(BaseTask):
 
     def __init__(self, *args, **kwargs):
         super(VoilaTask, self).__init__(*args, **kwargs)
-        config = json.loads(kwargs.get('config', {}))
-        self._config = name_to_class(config.get('config')).from_json(config)
+        config = json.loads(kwargs.get("config", {}))
+        self._config = name_to_class(config.get("config")).from_json(config)
         self._report = json.loads(self.report)
 
     def run(self):
-        self.log.critical('report-post')
+        self.log.critical("report-post")
 
-        fp = self.input().open('r')
+        fp = self.input().open("r")
         output_nb = fp.read()
         fp.close()
 

@@ -5,12 +5,12 @@ from .base import Base
 
 
 class OutputSQL(Base):
-    __tablename__ = 'outputs'
+    __tablename__ = "outputs"
     id = Column(Integer, primary_key=True)
     name = Column(String)
 
-    reportId = Column(Integer, ForeignKey('reports.id'))
-    report = relationship('ReportSQL', back_populates='outputs')
+    reportId = Column(Integer, ForeignKey("reports.id"))
+    report = relationship("ReportSQL", back_populates="outputs")
 
     created = Column(DateTime)
     data = LargeBinary()
